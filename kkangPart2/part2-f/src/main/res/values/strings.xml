@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Other Language</string>
+    <string name="titleBigText">Send and receive SMS from Messenger</string>
+    <string name="titleSmallText">Manage all of your conversations in one place and use
+                                stickers and chat heads. SMS conversations are displayed
+                                separately in Messager and are only available via a mobile
+                                phone. Standard text message charges will be charged.</string>
+    <string name="btn_OK">OK</string>
+    <string name="btn_Setting">Setting</string>
+    <string name="clickOK">OK Button clicked!</string>
+    <string name="mainTitle">Write Article</string>
+    <string name="hintTitle">Main Title</string>
+    <string name="hintSubTitle">Sub Title</string>
+    <string name="hintContent">input your text</string>
+    <string name="alertMsg">작성중인 내용을 저장하지 않고 나가시겠습니까?</string>
+    <string name="alertOK">OK</string>
+    <string name="alertNO">Cancel</string>
+</resources>
