@@ -1,5 +1,6 @@
 package huconn.yunikim.kkangpart5;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -7,9 +8,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     ListView listView;
-    ArrayAdapter<String> arrayAdapter;
+    ArrayAdapter<ArrayList> arrayAdapter;
+    ArrayList<String> datas;
     Button btAnother;
     Button btDialog;
 
@@ -18,7 +22,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+        datas = new ArrayList<>();
+        arrayAdapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, datas);
 
         btAnother = findViewById(R.id.anotherActi);
         btDialog = findViewById(R.id.dialogActi);
@@ -28,7 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btAnother.setOnClickListener(this);
         btDialog.setOnClickListener(this);
 
-        arrayAdapter.add("onCreate - MainActivity");
+        datas.add("onCreate - MainActivity");
         arrayAdapter.notifyDataSetChanged();
     }
 
@@ -36,7 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onResume() {
         super.onResume();
 
-        arrayAdapter.add("onResume - MainActivity");
+        datas.add("onResume - MainActivity");
         arrayAdapter.notifyDataSetChanged();
     }
 
@@ -44,40 +49,78 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onStart() {
         super.onStart();
 
-        arrayAdapter.add("onStart - MainActivity");
+        datas.add("onStart - MainActivity");
         arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        arrayAdapter.add("onPause - MainActivity");
+        datas.add("onPause - MainActivity");
         arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        arrayAdapter.add("onStop - MainActivity");
+        datas.add("onStop - MainActivity");
         arrayAdapter.notifyDataSetChanged();
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        arrayAdapter.add("onRestart - MainActivity");
+        datas.add("onRestart - MainActivity");
         arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onDestroy() {
+        datas.add("onDestroy - MainActivity");
+        arrayAdapter.notifyDataSetChanged();
+        super.onDestroy();
     }
 
     @Override
     public void onClick(View v) {
         if(v == btAnother) {
-            arrayAdapter.add("click ANOTHER button");
+            datas.add("click ANOTHER button");
             arrayAdapter.notifyDataSetChanged();
+
+            Intent intent = new Intent(this, AnotherActivity.class);
+            intent.putExtra("data", datas);
+            startActivityForResult(intent, 10);
         }
         else if(v == btDialog) {
-            arrayAdapter.add("click DIALOG button");
+            datas.add("click DIALOG button");
             arrayAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        ArrayList<String> appendData;
+
+        if(requestCode == 10 && resultCode == RESULT_OK) {
+            appendData = data.getStringArrayListExtra("data");
+            datas.addAll(appendData);
+        }
+        arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        datas.add("onSaveInstanceState - MainActivity");
+        arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        datas.add("onRestoreInstanceState - MainActivity");
+        arrayAdapter.notifyDataSetChanged();
     }
 }
