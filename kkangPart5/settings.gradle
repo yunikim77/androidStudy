@@ -1,1 +1,1 @@
-include ':app', ':part5-16'
+include ':app', ':part5-16', ':part5-mission'
