@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import java.lang.ref.WeakReference;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     TextView textView;
@@ -16,7 +18,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ImageButton btStart;
     ImageButton btStop;
     private boolean isStop = false;
-    private boolean isFirst = true;
+    private boolean isProcessing = false;
+
+    static class MyHandler extends Handler {
+        private final WeakReference<MainActivity> weakReference;
+        MainActivity act;
+
+        public MyHandler(MainActivity activity) {
+            this.weakReference = new WeakReference<>(activity);
+            act = activity;
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.what == 1) {
+                act.textView.setText(String.valueOf(msg.arg1));
+                Log.d("핸들러", String.valueOf(msg.arg1) + "번째 카운트 설정");
+            }
+            else if(msg.what == 2) {
+                act.textView.setText((String)msg.obj);
+                Log.d("핸들러", "LAST Handling");
+            }
+        }
+    }
+
+    MyHandler handler = new MyHandler(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,18 +55,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btStop = findViewById(R.id.btStop);
 
         btStart.setOnClickListener(this);
+        btStop.setOnClickListener(this);
 
-        thread = new MyThread();
 
     }
 
     @Override
     public void onClick(View v) {
         if(v == btStart) {
-            if(isFirst) {
-                isFirst = false;
-                isStop = false;
-                thread.run();
+            isStop = false;
+            if(!isProcessing) {
+                isProcessing = true;
+                thread = new MyThread();
+                thread.start();
             }
         }
         if(v == btStop) {
@@ -47,33 +75,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            //super.handleMessage(msg);
-            if(msg.what == 1) {
-                textView.setText(String.valueOf(msg.arg1));
-                Log.d("핸들러", String.valueOf(msg.arg1)+"번째 카운트 설정");
-            }
-        }
-    };
-
     class MyThread extends Thread {
         @Override
         public void run() {
-            //super.run();
+            super.run();
 
-            for(int cnt=10;cnt>=0;cnt--) {
+            int cnt=10;
+
+            while(isProcessing)
+            {
                 if(!isStop) {
+                    cnt--;
+                    Message msg = new Message();
+                    msg.what = 1;
+                    msg.arg1 = cnt;
+                    handler.sendMessage(msg);
+                    Log.d("쓰레드", String.valueOf(cnt)+"번째 카운트 메시지 전달");
                     try {
                         Thread.sleep(1000);
-                        Message msg = new Message();
-                        msg.what = 1;
-                        msg.arg1 = cnt;
+                    } catch (InterruptedException e) {
+                        isProcessing = false;
+                    }
+
+                    if(cnt <= 0) {
+                        msg = new Message();
+                        msg.what = 2;
+                        msg.obj = "The END";
                         handler.sendMessage(msg);
-                        Log.d("쓰레드", String.valueOf(cnt)+"번째 카운트 메시지 전달");
-                    } catch (Exception e) {
-                        finish();
+                        Log.d("쓰레드", "The END");
+                        isProcessing = false;
                     }
                 }
             }
