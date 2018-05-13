@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/menu_drawer_home"
+        android:icon="@android:drawable/ic_dialog_dialer"
+        android:title="HOME"/>
+    <item
+        android:id="@+id/menu_drawer_message"
+        android:icon="@android:drawable/ic_dialog_email"
+        android:title="MESSAGE"/>
+    <item
+        android:id="@+id/menu_drawer_add"
+        android:icon="@android:drawable/ic_menu_add"
+        android:title="ADD"/>
+</menu>
