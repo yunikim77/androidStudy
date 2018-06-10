@@ -6,10 +6,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,15 +48,20 @@ public class MainActivity extends AppCompatActivity {
                 Request request = new Request.Builder().url(strUrl).build();
                 Response response = client.newCall(request).execute();
 
-                JSONArray jsonArray = new JSONArray(response.body().string());
-                for (int i = 0; i < jsonArray.length(); i++) {
-                    JSONObject jsonObject = jsonArray.getJSONObject(i);
-                    String country = jsonObject.getString("country");
-                    String weather = jsonObject.getString("weather");
-                    String temperature = jsonObject.getString("temperature");
-                    Weather w = new Weather(country, weather, temperature);
-                    weatherList.add(w);
-                }
+                Gson gson = new Gson();
+
+                Type listType = new TypeToken<ArrayList<Weather>>(){}.getType();
+                weatherList = gson.fromJson(response.body().string(), listType);
+
+//                JSONArray jsonArray = new JSONArray(response.body().string());
+//                for (int i = 0; i < jsonArray.length(); i++) {
+//                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+//                    String country = jsonObject.getString("country");
+//                    String weather = jsonObject.getString("weather");
+//                    String temperature = jsonObject.getString("temperature");
+//                    Weather w = new Weather(country, weather, temperature);
+//                    weatherList.add(w);
+//                }
                 Log.d(TAG, weatherList.toString());
             } catch (Exception e) {
                 e.printStackTrace();
